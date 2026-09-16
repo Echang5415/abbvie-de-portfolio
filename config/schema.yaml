@@ -1,5 +1,5 @@
 structured_clinical:
   patient_id: int64
   age: int64
-  trial_arm: object
+  trial_arm: str
   baseline_score: float64
