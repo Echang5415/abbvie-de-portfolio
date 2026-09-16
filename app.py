@@ -4,8 +4,18 @@ import plotly.express as px
 import pandas as pd
 import sqlite3
 from tinydb import TinyDB
+from datetime import datetime
 
+from utils.sensor import validate_data_readiness
 from utils.data_quality import validate_schema, validate_values
+
+# 1. Define the parameters for the current run
+EXPERIMENT = "trial_alpha"
+now = datetime.now()
+YEAR, MONTH, DAY = now.strftime("%Y"), now.strftime("%m"), now.strftime("%d")
+
+# 2. TRIGGER SENSOR: If this fails, the app stops immediately
+data_dir = validate_data_readiness(EXPERIMENT, YEAR, MONTH, DAY)
 
 # --- 1. QUERYING & VALIDATION ---
 def load_and_query_data():
