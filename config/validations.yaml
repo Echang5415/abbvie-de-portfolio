@@ -1,0 +1,12 @@
+structured_clinical:
+  age:
+    min: 18
+    max: 100
+  baseline_score:
+    min: 0.0
+    max: 100.0
+  trial_arm:
+    allowed_values: 
+      - Control
+      - Treatment A
+      - Agentic Design B

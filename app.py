@@ -5,27 +5,31 @@ import pandas as pd
 import sqlite3
 from tinydb import TinyDB
 
+from utils.data_quality import validate_schema, validate_values
+
+# --- 1. QUERYING & VALIDATION ---
 def load_and_query_data():
-    # Query Structured Data(SQL):
+    # Query Structured Data (SQL)
     conn = sqlite3.connect('data/structured_clinical.db')
-    sql_df = pd.read_sql_query("SELECT * FROM patients", conn)
+    sql_df = pd.read_sql("SELECT * FROM patients WHERE age >= 25", conn)
     conn.close()
-
-    # Query Unstructured Data(NoSQL):
+    
+    # --- NEW: RUN QUALITY CHECKS ---
+    print("Running Quality Checks on SQL Data...")
+    validate_schema(sql_df, 'config/schema.yaml', 'structured_clinical')
+    validate_values(sql_df, 'config/validations.yaml', 'structured_clinical')
+    
+    # Query Unstructured Data (NoSQL)
     db = TinyDB('data/unstructured_telemetry.json')
-    telemetry_data = db.all()
-
-    # Flatten nested NoSQL JSON for analysis
-    nosql_df = pd.json_normalize(telemetry_data)
+    nosql_data = db.all()
+    
+    nosql_df = pd.json_normalize(nosql_data)
     nosql_df.rename(columns={
-        'telemetry_metrics.daily_steps_avg': 'steps',
-        'telemetry_metrics.wearable_hrv': 'hrv',
-        'telemetry_metrics.symptoms_logged': 'symptoms_logged'
+        'digital_twin_metrics.daily_steps_avg': 'steps', 
+        'digital_twin_metrics.wearable_hrv': 'hrv'
     }, inplace=True)
-
-    # Merge Structured and Unstructured Data on patient_id
-    merged_df = pd.merge(sql_df, nosql_df, on='patient_id', how='inner')
-
+    
+    merged_df = pd.merge(sql_df, nosql_df, on='patient_id')
     return merged_df
 
 df = load_and_query_data()
