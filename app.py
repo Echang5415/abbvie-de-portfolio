@@ -73,4 +73,4 @@ app.layout = html.Div(style={'fontFamily': 'Arial, sans-serif', 'margin': '40px'
 
 if __name__ == '__main__':
     # Run using: uv run app.py
-    app.run_server(debug=True)
+    app.run(debug=True)
