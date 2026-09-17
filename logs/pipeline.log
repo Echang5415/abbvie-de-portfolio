@@ -1,2 +1,8 @@
 2026-09-16 16:27:56,421 - ERROR - [DataQuality] - Schema Validation Failed: Column 'trial_arm' is type 'str', expected 'object'2026-09-16 16:31:07,150 - INFO - [DataQuality] - Schema validation passed for structured_clinical.
 2026-09-16 16:31:07,154 - ERROR - [DataQuality] - Value Validation Failed: 'age' contains values above maximum 30. Found: [53, 66, 52, 46, 52, 33, 46, 68, 69, 74, 75, 66, 66, 71, 49, 56, 71, 51, 55, 45, 48, 31, 33, 63, 56, 57, 60, 54, 68, 72, 62, 62, 54, 31, 69, 48, 77, 72, 71, 78, 33, 65, 53, 34, 49, 71, 36, 76, 47, 59, 34, 63, 62, 43, 58, 47, 60, 47, 57, 60, 76, 45, 77, 74, 38, 69, 60, 31, 40, 41, 74, 34, 42, 45, 52, 38, 46, 48, 71, 48, 36, 69, 38, 33]
+2026-09-16 16:48:44,556 - INFO - [DataSensor] - Sensing data directory: data\trial_alpha\2026\09\16
+2026-09-16 16:48:44,556 - ERROR - [DataSensor] - Sensor Failed: Data dependency missing. Expected directory not found: data\trial_alpha\2026\09\16
+2026-09-16 16:59:24,186 - INFO - [DataSensor] - Sensing data directory: data\structured_clinical\2026\09\16
+2026-09-16 16:59:24,186 - INFO - [DataSensor] - Sensor passed: Data found at data\structured_clinical\2026\09\16
+2026-09-16 16:59:24,189 - INFO - [DataQuality] - Schema validation passed for structured_clinical.
+2026-09-16 16:59:24,192 - INFO - [DataQuality] - Value validation passed for structured_clinical.

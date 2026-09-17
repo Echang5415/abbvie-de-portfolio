@@ -4,6 +4,7 @@ from tinydb import TinyDB
 import random
 from datetime import datetime
 from pathlib import Path
+import yaml
 
 def generate_mock_data(experiment_name: str):
     """
@@ -18,7 +19,7 @@ def generate_mock_data(experiment_name: str):
     # exist_ok=True prevents errors if you run the script multiple times a day
     output_dir.mkdir(parents=True, exist_ok=True) 
     
-    print(f"Generating data for experiment: '{experiment_name}' at {output_dir}...")
+    print(f"\n🚀 Generating data for experiment: '{experiment_name}' at {output_dir}...")
     
     # 2. Structured Data (SQL)
     print("Generating Structured Data (SQL)...")
@@ -51,6 +52,21 @@ def generate_mock_data(experiment_name: str):
         
     print(f"✅ Data generation complete for '{experiment_name}'.")
 
+
 if __name__ == "__main__":
-    # Example execution for a specific trial
-    generate_mock_data(experiment_name="trial_alpha")
+    # Dynamically read experiment names from schema.yaml
+    config_path = "config/schema.yaml"
+    
+    try:
+        with open(config_path, 'r') as file:
+            schema_config = yaml.safe_load(file)
+            
+        if schema_config:
+            # Iterate through all root-level keys in the YAML (e.g., "structured_clinical")
+            for experiment_name in schema_config.keys():
+                generate_mock_data(experiment_name=experiment_name)
+        else:
+            print(f"⚠️ Warning: {config_path} is empty or invalid.")
+            
+    except FileNotFoundError:
+        print(f"❌ Error: {config_path} not found. Please ensure the config directory exists.")

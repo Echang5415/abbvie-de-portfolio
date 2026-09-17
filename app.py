@@ -5,12 +5,14 @@ import pandas as pd
 import sqlite3
 from tinydb import TinyDB
 from datetime import datetime
+import yaml
 
 from utils.sensor import validate_data_readiness
 from utils.data_quality import validate_schema, validate_values
+from utils.helpers import get_experiment_name
 
 # 1. Define the parameters for the current run
-EXPERIMENT = "trial_alpha"
+EXPERIMENT = get_experiment_name()
 now = datetime.now()
 YEAR, MONTH, DAY = now.strftime("%Y"), now.strftime("%m"), now.strftime("%d")
 
@@ -19,18 +21,18 @@ data_dir = validate_data_readiness(EXPERIMENT, YEAR, MONTH, DAY)
 
 # --- 1. QUERYING & VALIDATION ---
 def load_and_query_data():
-    # Query Structured Data (SQL)
-    conn = sqlite3.connect('data/structured_clinical.db')
+    # Query Structured Data (SQL) - Updated to use dynamic data_dir
+    conn = sqlite3.connect(str(data_dir / 'structured_clinical.db'))
     sql_df = pd.read_sql("SELECT * FROM patients WHERE age >= 25", conn)
     conn.close()
     
-    # --- NEW: RUN QUALITY CHECKS ---
-    print("Running Quality Checks on SQL Data...")
-    validate_schema(sql_df, 'config/schema.yaml', 'structured_clinical')
-    validate_values(sql_df, 'config/validations.yaml', 'structured_clinical')
+    # Run Quality Checks on SQL Data - Updated to use dynamic EXPERIMENT variable
+    print(f"Running Quality Checks on SQL Data for {EXPERIMENT}...")
+    validate_schema(sql_df, 'config/schema.yaml', EXPERIMENT)
+    validate_values(sql_df, 'config/validations.yaml', EXPERIMENT)
     
-    # Query Unstructured Data (NoSQL)
-    db = TinyDB('data/unstructured_telemetry.json')
+    # Query Unstructured Data (NoSQL) - Updated to use dynamic data_dir
+    db = TinyDB(str(data_dir / 'unstructured_telemetry.json'))
     nosql_data = db.all()
     
     nosql_df = pd.json_normalize(nosql_data)
@@ -77,7 +79,7 @@ app.title = "AbbVie Data Engineering Portfolio"
 
 app.layout = html.Div(style={'fontFamily': 'Arial, sans-serif', 'margin': '40px'}, children=[
     html.H1("Clinical R&D Data Engineering Pipeline"),
-    html.P("An end-to-end demonstration of processing, merging, and visualizing structured (SQL) and unstructured (NoSQL) data for digital twin modeling."),
+    html.P(f"An end-to-end demonstration of processing, merging, and visualizing structured (SQL) and unstructured (NoSQL) data for digital twin modeling. Current Experiment: {EXPERIMENT}"),
     
     html.Div(style={'display': 'flex', 'gap': '20px', 'marginTop': '30px'}, children=[
         dcc.Graph(figure=fig_bar, style={'flex': '1', 'boxShadow': '0 4px 8px rgba(0,0,0,0.1)'}),
@@ -87,4 +89,4 @@ app.layout = html.Div(style={'fontFamily': 'Arial, sans-serif', 'margin': '40px'
 
 if __name__ == '__main__':
     # Run using: uv run app.py
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)
